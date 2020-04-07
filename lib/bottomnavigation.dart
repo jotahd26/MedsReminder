@@ -13,7 +13,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
 
-      home: Home(),
+        home: Home(),
         debugShowCheckedModeBanner: false,
         routes:{
           '/addMedicamento':(context)=>Addmedicamento(),
@@ -63,8 +63,8 @@ class _HomeState extends State<Home> {
             title:  Text('Histórico',style: TextStyle(color: Colors.black)),
           ),
           BottomNavigationBarItem(
-              icon: Icon(MyFlutterApp.heartbeat),
-              title: Text('Gestão',style: TextStyle(color: Colors.black)),
+            icon: Icon(MyFlutterApp.heartbeat),
+            title: Text('Gestão',style: TextStyle(color: Colors.black)),
           )
         ],
       ),
