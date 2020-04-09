@@ -25,9 +25,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   shared_preferences: ^0.5.6+3
   autocomplete_textfield: 1.7.3
-  file: ^5.1.0
-  csv: ^4.0.3
-  faker: ^1.2.1
+  sqflite: any
+  path_provider: any
 
 dev_dependencies:
   flutter_test:

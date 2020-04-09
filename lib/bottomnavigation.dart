@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'pages/adicionarMedicamento.dart';
 import 'pages/gestao.dart';
 import 'pages/historico.dart';
 import 'pages/eventos.dart';
@@ -15,9 +14,6 @@ class App extends StatelessWidget {
 
         home: Home(),
         debugShowCheckedModeBanner: false,
-        routes:{
-          '/addMedicamento':(context)=>Addmedicamento(),
-        }
 
     );
   }

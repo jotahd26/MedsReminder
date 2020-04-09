@@ -26,6 +26,7 @@ class _State extends State<Historico> {
         title: Text("Histórico"),
         centerTitle: true,
         backgroundColor: Colors.green.shade800,
+
       ),
       body: Center(
         child: Text('Histórico',style: TextStyle(fontSize: 20)),
