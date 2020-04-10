@@ -35,8 +35,9 @@ class _State extends State<PaginaMedicamento> {
   GlobalKey<AutoCompleteTextFieldState<String>> keyStock = new GlobalKey();
   String newValue;
   String newValueFrequencia;
-  String dropdownValue = 'Unidade';
-  String dropdownValueFrequencia = 'Diariamente, x vezes ao dia';
+  String dropdownValue;
+  String dropdownValueFrequencia;
+  final _nomeFocus = FocusNode();
 
   @override
   void initState() {
@@ -54,7 +55,11 @@ class _State extends State<PaginaMedicamento> {
       if(medicamento.tipo!=null){
         newValue = medicamento.tipo;
         newValueFrequencia= medicamento.frequencia;
+        dropdownValue=tipoList.last;
+        dropdownValueFrequencia=frequenciaList.first;
 
+        updateTipo(dropdownValue);
+        updateFrequencia(dropdownValueFrequencia);
         //Inicializar os valores quando edito
         nomeController.text = medicamento.nome;
         tipoController.text = medicamento.tipo;
@@ -63,7 +68,14 @@ class _State extends State<PaginaMedicamento> {
       }
     });
   }
-
+  bool visibilityTextAlert = false;
+  void _changed(bool visibility, String field) {
+    setState(() {
+      if (field == "tag"){
+        visibilityTextAlert= visibility;
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -102,13 +114,21 @@ class _State extends State<PaginaMedicamento> {
                           csv.length == 0 ? Text("A carregar dados..."): SimpleAutoCompleteTextField(       //Nome do Medicamento
                             //key: key,
                             controller: nomeController,
+                            focusNode: _nomeFocus,
                             suggestions: csv,
                             onFocusChanged: (hasFocus) {
                               setState(() {
+                                if(medicamento.nome!="")
+                                {
+                                  _changed(false, "tag");
+                                }
                                 updateNome();
                               });
                             },
                             textChanged: (text){
+                              if(medicamento.nome!=""){
+                                _changed(false, "tag");
+                              }
                               updateNome();
                             },
                             decoration: InputDecoration(
@@ -125,8 +145,8 @@ class _State extends State<PaginaMedicamento> {
                               //icon: Icon(Icons.chevron_right,color: Colors.green.shade800),
                               isDense: true,
                             ),
-
                           ),
+                          visibilityTextAlert ? Text('Precisa de preencher o nome primeiro',style: TextStyle(color: Colors.red),) : new Container()
                         ],
                       )
                   ),
@@ -162,8 +182,7 @@ class _State extends State<PaginaMedicamento> {
                             if(newValue!=""){
                               newValue=valueSelected;
                             }
-                            medicamento.tipo = valueSelected;
-                            //updateTipo(valueSelectedByUser);
+                            updateTipo(valueSelected);
                           });
                         }
                     ),
@@ -203,8 +222,7 @@ class _State extends State<PaginaMedicamento> {
                                   if(newValueFrequencia!=""){
                                     newValueFrequencia=valueSelected;
                                   }
-                                  medicamento.frequencia = valueSelected;
-                                  //updateTipo(valueSelectedByUser);
+                                  updateFrequencia(valueSelected);
                                 });
                               }
                             //changedDropDownItem,
@@ -261,7 +279,14 @@ class _State extends State<PaginaMedicamento> {
           disabledTextColor: Colors.black,
           padding: EdgeInsets.only(left: 18,right: 18),
           onPressed: (){
-            _save();
+            if(medicamento.nome != "")
+            {
+              _save();
+            }else{
+              //_exibeAviso();
+              _changed(true, "tag");
+              FocusScope.of(context).requestFocus(_nomeFocus);
+            }
           },
           child: Text(
             "Guardar",
@@ -285,6 +310,12 @@ class _State extends State<PaginaMedicamento> {
       });
 
     });
+  }
+  void updateFrequencia(String val) {
+    medicamento.frequencia = val;
+  }
+  void updateTipo(String val) {
+    medicamento.tipo = val;
   }
   void updateNome(){
     medicamento.nome = nomeController.text;

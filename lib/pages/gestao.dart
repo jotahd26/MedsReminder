@@ -103,44 +103,12 @@ void initState() {
         updateListView();
     };
   }
-_listaMedicamentos(BuildContext context, int index){
 
-}
-void _confirmaExclusao(BuildContext context,) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Excluir Contato"),
-        content: Text("Confirma a exclusão do Contato"),
-        actions: <Widget>[
-          FlatButton(
-            child: Text("Cancelar"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          FlatButton(
-            child: Text("Excluir"),
-            onPressed: () {
-
-              setState(() {
-                //medicamentosList.removeAt(index);
-                //databaseHelper.deleteMedicamento(medicamentoid);
-               //_delete(context,cont);
-              });
-              Navigator.of(context).pop();
-            },
-          )
-        ], //widget
-      );
-    },
-  );
-}
 void _showSnackBar(BuildContext context, String message) {
 
-    final snackBar = SnackBar(content: Text(message));
+    final snackBar = SnackBar(content: Text(message),duration: Duration(seconds: 1),);
     Scaffold.of(context).showSnackBar(snackBar);
+
   }
 void updateListView() {
 
