@@ -24,13 +24,15 @@ class _State extends State<PaginaMedicamento> {
   String appBarTitle;
   Medicamento medicamento;
 
-  TextEditingController nomeController = TextEditingController();
-  TextEditingController tipoController = TextEditingController();
-  TextEditingController frequenciaController = TextEditingController();
+  final TextEditingController nomeController = TextEditingController();
+  final TextEditingController tipoController = TextEditingController();
+  final TextEditingController frequenciaController = TextEditingController();
+  final TextEditingController stockController = TextEditingController();
   _State(this.medicamento, this.appBarTitle);
 
   List<String> csv = new List();
   GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
+  GlobalKey<AutoCompleteTextFieldState<String>> keyStock = new GlobalKey();
   String newValue;
   String newValueFrequencia;
   String dropdownValue = 'Unidade';
@@ -52,15 +54,20 @@ class _State extends State<PaginaMedicamento> {
       if(medicamento.tipo!=null){
         newValue = medicamento.tipo;
         newValueFrequencia= medicamento.frequencia;
+
+        //Inicializar os valores quando edito
+        nomeController.text = medicamento.nome;
+        tipoController.text = medicamento.tipo;
+        frequenciaController.text = medicamento.frequencia;
+        stockController.text=medicamento.stock;
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    nomeController.text = medicamento.nome;
-    tipoController.text = medicamento.tipo;
-    frequenciaController.text = medicamento.frequencia;
+
+    //stockController.text = medicamento.stock;
     return WillPopScope(
         onWillPop: () {moveToLastScreen();},
     child: Scaffold(
@@ -93,7 +100,7 @@ class _State extends State<PaginaMedicamento> {
                         children: <Widget>[
                           Text('Nome do Medicamento:',style: TextStyle(fontSize: 18)),
                           csv.length == 0 ? Text("A carregar dados..."): SimpleAutoCompleteTextField(       //Nome do Medicamento
-                            key: key,
+                            //key: key,
                             controller: nomeController,
                             suggestions: csv,
                             onFocusChanged: (hasFocus) {
@@ -208,6 +215,37 @@ class _State extends State<PaginaMedicamento> {
                 ],
               ),
             ),
+            Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(20, 10.0, 20.0, 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          new Text('Quantidade em stock:',style: TextStyle(fontSize: 18)),
+                          TextFormField(
+                            //key:keyStock,
+                            controller: stockController,
+                            keyboardType: TextInputType.number,
+                            //inputFormatters: ,
+                            decoration: InputDecoration(
+                              enabledBorder: new UnderlineInputBorder(
+
+                                borderSide: new BorderSide(color: Colors.green.shade800,width: 2),
+                              ),
+                            ),
+                            onChanged: (valor){
+                                medicamento.stock=valor;
+                            },
+                          )
+                        ],
+                      )
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 10),
             //Texto -> Frequência
           ],
@@ -250,6 +288,9 @@ class _State extends State<PaginaMedicamento> {
   }
   void updateNome(){
     medicamento.nome = nomeController.text;
+  }
+  void updateStock(){
+    medicamento.stock = stockController.text;
   }
   void _save() async {
 

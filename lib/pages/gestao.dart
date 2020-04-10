@@ -56,7 +56,7 @@ void initState() {
               icon: Icon(Icons.add),
               onPressed: () {
                 debugPrint('FAB clicked');
-                navigateToDetail(Medicamento('', '',''), 'Adicionar Medicamento');
+                navigateToDetail(Medicamento('', '','',''), 'Adicionar Medicamento');
               },
             ),
             Expanded(

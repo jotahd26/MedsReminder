@@ -14,6 +14,7 @@ class DatabaseHelper {
   String colNome = 'nome';
   String colTipo = 'tipo';
   String colFrequencia = 'frequencia';
+  String colStock = 'stock';
   //String colDate = 'date';
 
   DatabaseHelper._createInstance(); // Named constructor to create instance of DatabaseHelper
@@ -47,7 +48,7 @@ class DatabaseHelper {
   void _createDb(Database db, int newVersion) async {
 
     await db.execute('CREATE TABLE $medicamentoTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colNome TEXT, '
-        '$colTipo TEXT, $colFrequencia TEXT)');
+        '$colTipo TEXT, $colFrequencia TEXT, $colStock TEXT)');
   }
 
   // Fetch Operation: Get all note objects from database
