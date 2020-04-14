@@ -4,18 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:myflutterproject/helpers/databasehelper.dart';
+import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
 
 
 class PaginaMedicamento extends StatefulWidget {
   final String appBarTitle;
   final Medicamento medicamento;
-  PaginaMedicamento(this. medicamento, this.appBarTitle);
+  final Horario horario;
+
+  PaginaMedicamento(this. medicamento,this.horario, this.appBarTitle);
 
   @override
   State<StatefulWidget> createState() {
 
-    return _State(this.medicamento, this.appBarTitle);
+    return _State(this.medicamento,this.horario, this.appBarTitle);
   }
 }
 
@@ -23,13 +26,16 @@ class _State extends State<PaginaMedicamento> {
   DatabaseHelper helper = DatabaseHelper();
   String appBarTitle;
   Medicamento medicamento;
+  Horario horario;
 
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController tipoController = TextEditingController();
   final TextEditingController frequenciaController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
-  _State(this.medicamento, this.appBarTitle);
 
+  _State(this.medicamento,this.horario, this.appBarTitle);
+  List<String> timeofday = [];
+  static TimeOfDay t = TimeOfDay.now();
   List<String> csv = new List();
   GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
   GlobalKey<AutoCompleteTextFieldState<String>> keyStock = new GlobalKey();
@@ -37,22 +43,32 @@ class _State extends State<PaginaMedicamento> {
   String newValueFrequencia;
   String dropdownValue;
   String dropdownValueFrequencia;
+  int ultimo_id_medicamento;
   final _nomeFocus = FocusNode();
-
+  bool editado;
+  bool estado=false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getIdUltimoInserido();
     medicamento = Medicamento.fromMapObject(widget.medicamento.toMap());
     getDropDownItem();
     loadCSV();
   }
   List <String> tipoList= ["Ampolas", "Aplicações", "Capsulas", "Colher de cha", "Colher de sopa","Gota","Grama","Inalações","Injeção","Miligrama","Mililitro","Pedaço","Penso","Pilula","Spray","Supositório","UI","Unidade"];
   List <String> frequenciaList = ["Diariamente, x vezes ao dia", "Diariamente, a cada x horas","A cada X dias","Dias especificos da semana"];
-
+  void getIdUltimoInserido() async{
+    ultimo_id_medicamento = await helper.getUltimoValorTabelaMedicamento();
+  }
   void getDropDownItem(){
     setState(() {
       if(medicamento.tipo!=null){
+        //estado = true;
+        if(medicamento.nome!=null){
+          editado=true;
+        }
+
         newValue = medicamento.tipo;
         newValueFrequencia= medicamento.frequencia;
         dropdownValue=tipoList.last;
@@ -76,6 +92,7 @@ class _State extends State<PaginaMedicamento> {
       }
     });
   }
+  int count=0;
   @override
   Widget build(BuildContext context) {
 
@@ -92,7 +109,7 @@ class _State extends State<PaginaMedicamento> {
         onPressed: () {
         // Write some code to control things, when user press back button in AppBar
         moveToLastScreen();
-        }
+        },
         ),
         centerTitle: true,
         backgroundColor: Colors.green.shade800,
@@ -112,7 +129,7 @@ class _State extends State<PaginaMedicamento> {
                         children: <Widget>[
                           Text('Nome do Medicamento:',style: TextStyle(fontSize: 18)),
                           csv.length == 0 ? Text("A carregar dados..."): SimpleAutoCompleteTextField(       //Nome do Medicamento
-                            //key: key,
+                            key: key,
                             controller: nomeController,
                             focusNode: _nomeFocus,
                             suggestions: csv,
@@ -237,6 +254,59 @@ class _State extends State<PaginaMedicamento> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
+                          FlatButton.icon(
+                            icon: Icon(Icons.alarm),
+                            color: Colors.blue,
+                            textColor: Colors.white,
+                            disabledColor: Colors.grey,
+                            disabledTextColor: Colors.black,
+                            padding: EdgeInsets.only(left: 18,right: 18),
+
+                            onPressed: () async{
+                              final time = await _selectTime(context);
+                              if(time==null) return;
+                              addItemToList(time);
+                              //_savehorario();
+                            },
+                            label: Text('Adicionar Hora'),
+                          ),
+                        ],
+                  ),
+            ),
+      new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+            child: SizedBox(
+                height: 100.0,
+                child: new ListView.builder(
+                itemCount: timeofday.length,
+                padding: EdgeInsets.all(10.0),
+                itemBuilder: (BuildContext context, int position) {
+                  return Card(
+                      color: Colors.white,
+                      elevation: 2.0,
+                      child: ListTile(
+                      title: Text(timeofday[position]),
+                  trailing: GestureDetector(
+                  child: Icon(Icons.delete, color: Colors.grey,),
+                  onTap: () {
+                  apagarHoradalista(context,position);
+                  //_confirmaExclusao(context, medicamentosList[position]);
+                  },
+                  ),
+                      ),
+                  );
+                },
+            )
+        ),
+          ),
+        ]
+      ),
+            Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
                   Padding(
                       padding: EdgeInsets.fromLTRB(20, 10.0, 20.0, 20.0),
                       child: Column(
@@ -295,6 +365,28 @@ class _State extends State<PaginaMedicamento> {
       ),
     )
     );
+}
+  Future<TimeOfDay> _selectTime(BuildContext context) {
+    return showTimePicker( context: context, initialTime: t,
+    );
+  }
+  void addItemToList(TimeOfDay time){
+    setState(() {
+      //horario.hora = time.format(context);
+      //horario.idMedicamento = 4;
+      timeofday.insert(0,time.format(context));
+    });
+  }
+  void apagarHoradalista(BuildContext context,int position){
+    setState(() {
+      timeofday.removeAt(position);
+    });
+    updateHora();
+  }
+  void updateHora(){
+    setState(() {
+      this.timeofday.length = timeofday.length;
+    });
   }
   void moveToLastScreen() {
     Navigator.pop(context, true);
@@ -304,11 +396,9 @@ class _State extends State<PaginaMedicamento> {
   }
   void loadCSV() {
     loadAsset('assets/lista.csv').then((String output) {
-
       setState(() {
         csv = output.split("\n");
       });
-
     });
   }
   void updateFrequencia(String val) {
@@ -323,22 +413,32 @@ class _State extends State<PaginaMedicamento> {
   void updateStock(){
     medicamento.stock = stockController.text;
   }
+  void _savehorario() async{
+    int result;
+    if(horario.id!=null){
+      result = await helper.updateHorario(horario);
+    }
+    else{
+      //problema, se a tabela medicamentos não tiver valor, proximo id vai ser igual ao ultimo inserido, a tabela horario nao recebe
+      for(int i=0; i<timeofday.length;i++){
+        horario.hora=timeofday[i];
+//        if(ultimo_id_medicamento!=null){
+//          horario.idMedicamento = ultimo_id_medicamento+1;
+//        }else{
+//          horario.idMedicamento = 1;
+//        }
+        result = await helper.insertHorario(horario);
+      }
+    }
+  }
   void _save() async {
-
     moveToLastScreen();
     int result;
     if (medicamento.id != null) {  // Case 1: Update operation
       result = await helper.updateMedicamento(medicamento);
     } else { // Case 2: Insert Operation
       result = await helper.insertMedicamento(medicamento);
+      _savehorario();
     }
-
-    if (result != 0) {  // Success
-      //_showAlertDialog('Status', 'Note Saved Successfully');
-    } else {  // Failure
-      //_showAlertDialog('Status', 'Problem Saving Note');
     }
-
-  }
-
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myflutterproject/helpers/databasehelper.dart';
+import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
 import 'package:sqflite/sqflite.dart';
 import 'paginaMedicamento.dart';
@@ -24,8 +25,9 @@ class Gestao extends StatefulWidget {
 class _State extends State<Gestao> {
 DatabaseHelper databaseHelper = DatabaseHelper();
 List<Medicamento> medicamentosList;
+List<Horario> horarioList;
 int count = 0;
-
+bool check=false;
 @override
 void initState() {
     // TODO: implement initState
@@ -37,6 +39,10 @@ void initState() {
     if (medicamentosList == null) {
       medicamentosList = List<Medicamento>();
       updateListView();
+    }
+    if(horarioList==null){
+      horarioList = List<Horario>();
+      //updateListView();
     }
     return Scaffold(
       appBar: AppBar(
@@ -56,7 +62,7 @@ void initState() {
               icon: Icon(Icons.add),
               onPressed: () {
                 debugPrint('FAB clicked');
-                navigateToDetail(Medicamento('', '','',''), 'Adicionar Medicamento');
+                navigateToDetail(Medicamento('', '','',''),Horario('',0), 'Adicionar Medicamento');
               },
             ),
             Expanded(
@@ -68,11 +74,8 @@ void initState() {
                       color: Colors.white,
                       elevation: 2.0,
                       child: ListTile(
-
                         title: Text(this.medicamentosList[position].nome),
-
                         subtitle: Text(this.medicamentosList[position].tipo),
-
                         trailing: GestureDetector(
                           child: Icon(Icons.delete, color: Colors.grey,),
                           onTap: () {
@@ -80,10 +83,9 @@ void initState() {
                               //_confirmaExclusao(context, medicamentosList[position]);
                           },
                         ),
-
                         onTap: () {
                           debugPrint("ListTile Tapped");
-                          navigateToDetail(this.medicamentosList[position],'Editar Medicamento');
+                          navigateToDetail(this.medicamentosList[position],this.horarioList[position],'Editar Medicamento');
                         },
 
                       ),
@@ -122,11 +124,18 @@ void updateListView() {
         this.count = noteList.length;
       });
     });
+    Future<List<Horario>> horarioListFuture = databaseHelper.getHorarioList();
+    horarioListFuture.then((noteList) {
+      setState(() {
+        this.horarioList = noteList;
+        //this.count2 = noteList.length;
+      });
+    });
   });
 }
-  void navigateToDetail(Medicamento medicamento, String nome) async {
+  void navigateToDetail(Medicamento medicamento,Horario horario, String titulopagina) async {
     bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return PaginaMedicamento(medicamento, nome);
+      return PaginaMedicamento(medicamento,horario, titulopagina);
     }));
 
     if (result == true) {
