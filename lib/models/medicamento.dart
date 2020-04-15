@@ -22,6 +22,9 @@ class Medicamento {
 
   String get stock =>_stock;
 
+//  set id(int newid) {
+//      this._id = newid;
+//  }
   set nome(String newNome) {
     if (newNome.length <= 255) {
       this._nome = newNome;

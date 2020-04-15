@@ -81,18 +81,9 @@ class DatabaseHelper {
     //var result = await db.query(noteTable, orderBy: '$colPriority ASC');
     return result;
   }
-
-
   // Insert Operation: Insert a Note object to database
   Future<int> insertMedicamento(Medicamento medicamento) async {
     Database db = await this.database;
-//    final int o = await getUltimoValorTabelaMedicamento();
-//    print(o);
-//
-//    if(o!=null){
-//      int m = o+1;
-//      db.execute('ALTER TABLE $medicamentoTable AUTO_INCREMENT = $m');
-//    }
     var result = await db.insert(medicamentoTable, medicamento.toMap());
     return result;
   }
@@ -108,9 +99,9 @@ class DatabaseHelper {
     var result = await db.update(medicamentoTable, medicamento.toMap(), where: '$colId = ?', whereArgs: [medicamento.id]);
     return result;
   }
-  Future<int> updateHorario(Horario horario) async {
+  Future<int> updateHorario(Horario horario,Medicamento medicamento) async {
     var db = await this.database;
-    var result = await db.update(horarioTable, horario.toMap(), where: '$colIdHorario = ?', whereArgs: [horario.id]);
+    var result = await db.update(horarioTable, horario.toMap(), where: '$colIdMedicamento = ? and $colIdHorario=?', whereArgs: [medicamento.id,horario.id] );
     return result;
   }
   // Delete Operation: Delete a Note object from database
@@ -119,23 +110,34 @@ class DatabaseHelper {
     int result = await db.rawDelete('DELETE FROM $medicamentoTable WHERE $colId = $id');
     return result;
   }
-  Future<int> deleteHorario(int id) async {
+  Future<int> deleteHorarioMedicamento(int idmedicamento) async {
     var db = await this.database;
-    int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdHorario = $id');
+    int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdMedicamento=$idmedicamento' );
+    return result;
+  }
+  Future<int> deleteHorario(int id,int idmedicamento) async {
+    var db = await this.database;
+    int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdHorario = $id and $colIdMedicamento=$idmedicamento' );
     return result;
   }
 
   // Get number of Note objects in database
   Future<int> getCount() async {
     Database db = await this.database;
-    List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $medicamentoTable');
+    List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$horarioTable"');
     int result = Sqflite.firstIntValue(x);
     return result;
   }
-  Future<int> getUltimoValorTabelaMedicamento() async {
+  Future<int> getCountHorario() async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $horarioTable');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
+  Future<int> getFutureID() async {
 
     Database db = await this.database;
-    List<Map<String, dynamic>> x = await db.rawQuery('SELECT MAX($colId) FROM $medicamentoTable');
+    List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$medicamentoTable"');
     int result = Sqflite.firstIntValue(x);
     return result;
   }
@@ -149,6 +151,27 @@ class DatabaseHelper {
     // For loop to create a 'Note List' from a 'Map List'
     for (int i = 0; i < count; i++) {
       noteList.add(Medicamento.fromMapObject(noteMapList[i]));
+    }
+
+
+    return noteList;
+  }
+  Future<List<Map<String, dynamic>>> gethoraIDMedicamento(int id) async {
+    Database db = await this.database;
+
+    var result = await db.rawQuery('SELECT * FROM $horarioTable where $colIdMedicamento=$id');
+    //var result = await db.query(noteTable, orderBy: '$colPriority ASC');
+    return result;
+  }
+  Future<List<Horario>> getHorarioListEditar(int id) async {
+
+    var noteMapList = await gethoraIDMedicamento(id); // Get 'Map List' from database
+    int count = noteMapList.length;         // Count the number of map entries in db table
+
+    List<Horario> noteList = List<Horario>();
+    // For loop to create a 'Note List' from a 'Map List'
+    for (int i = 0; i < count; i++) {
+      noteList.add(Horario.fromMapObject(noteMapList[i]));
     }
 
     return noteList;

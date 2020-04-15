@@ -27,6 +27,7 @@ class _State extends State<PaginaMedicamento> {
   String appBarTitle;
   Medicamento medicamento;
   Horario horario;
+  List<Horario> horarioList;
 
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController tipoController = TextEditingController();
@@ -43,15 +44,19 @@ class _State extends State<PaginaMedicamento> {
   String newValueFrequencia;
   String dropdownValue;
   String dropdownValueFrequencia;
+  double listhorasheight=0;
   int ultimo_id_medicamento;
   final _nomeFocus = FocusNode();
   bool editado;
   bool estado=false;
+  int contadorlistahora = 0;
+  int o;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getIdUltimoInserido();
+    getIdhora();
     medicamento = Medicamento.fromMapObject(widget.medicamento.toMap());
     getDropDownItem();
     loadCSV();
@@ -59,8 +64,12 @@ class _State extends State<PaginaMedicamento> {
   List <String> tipoList= ["Ampolas", "Aplicações", "Capsulas", "Colher de cha", "Colher de sopa","Gota","Grama","Inalações","Injeção","Miligrama","Mililitro","Pedaço","Penso","Pilula","Spray","Supositório","UI","Unidade"];
   List <String> frequenciaList = ["Diariamente, x vezes ao dia", "Diariamente, a cada x horas","A cada X dias","Dias especificos da semana"];
   void getIdUltimoInserido() async{
-    ultimo_id_medicamento = await helper.getUltimoValorTabelaMedicamento();
+    ultimo_id_medicamento = await helper. getFutureID();
   }
+  void getIdhora() async{
+    o = await helper.getCountHorario();
+  }
+
   void getDropDownItem(){
     setState(() {
       if(medicamento.tipo!=null){
@@ -68,7 +77,8 @@ class _State extends State<PaginaMedicamento> {
         if(medicamento.nome!=null){
           editado=true;
         }
-
+        //edição das horas
+        insertlisthora(medicamento.id);
         newValue = medicamento.tipo;
         newValueFrequencia= medicamento.frequencia;
         dropdownValue=tipoList.last;
@@ -278,8 +288,9 @@ class _State extends State<PaginaMedicamento> {
         children: <Widget>[
           Expanded(
             child: SizedBox(
-                height: 100.0,
+                height: listhorasheight,
                 child: new ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: timeofday.length,
                 padding: EdgeInsets.all(10.0),
                 itemBuilder: (BuildContext context, int position) {
@@ -292,6 +303,7 @@ class _State extends State<PaginaMedicamento> {
                   child: Icon(Icons.delete, color: Colors.grey,),
                   onTap: () {
                   apagarHoradalista(context,position);
+
                   //_confirmaExclusao(context, medicamentosList[position]);
                   },
                   ),
@@ -374,12 +386,22 @@ class _State extends State<PaginaMedicamento> {
     setState(() {
       //horario.hora = time.format(context);
       //horario.idMedicamento = 4;
+      listhorasheight+=70;
       timeofday.insert(0,time.format(context));
+    });
+  }
+  void addItemToListString(String time){
+    setState(() {
+      //horario.hora = time.format(context);
+      //horario.idMedicamento = 4;
+      listhorasheight+=70;
+      timeofday.insert(0,time);
     });
   }
   void apagarHoradalista(BuildContext context,int position){
     setState(() {
       timeofday.removeAt(position);
+      listhorasheight-=70;
     });
     updateHora();
   }
@@ -415,30 +437,76 @@ class _State extends State<PaginaMedicamento> {
   }
   void _savehorario() async{
     int result;
-    if(horario.id!=null){
-      result = await helper.updateHorario(horario);
-    }
-    else{
+      if(medicamento.id==null){
       //problema, se a tabela medicamentos não tiver valor, proximo id vai ser igual ao ultimo inserido, a tabela horario nao recebe
       for(int i=0; i<timeofday.length;i++){
-        horario.hora=timeofday[i];
-//        if(ultimo_id_medicamento!=null){
-//          horario.idMedicamento = ultimo_id_medicamento+1;
-//        }else{
-//          horario.idMedicamento = 1;
-//        }
-        result = await helper.insertHorario(horario);
+          horario.hora=timeofday[i];
+          if(ultimo_id_medicamento!=null){
+            int p = ultimo_id_medicamento+1;
+            horario.idMedicamento=p;
+          }
+          else{
+            horario.idMedicamento=1;
+          }
+
+          //horario.idMedicamento = medicamento.id;
+          result = await helper.insertHorario(horario);
+        }
       }
     }
-  }
   void _save() async {
-    moveToLastScreen();
+
     int result;
     if (medicamento.id != null) {  // Case 1: Update operation
       result = await helper.updateMedicamento(medicamento);
+
+//      if(horarioList!=null){
+//        if(timeofday.length!=contadorlistahora){
+//      for(int i=0;i<timeofday.length;i++){
+//        bool p = horarioList[i].hora.contains(timeofday[i]);
+//        if(p!=true){
+//          getIdhora();
+//          horario.id=o+1;
+//          horario.hora=timeofday[i];
+//          horario.idMedicamento=medicamento.id;
+//          print((horario.id).toString() + ' ; ' + horario.hora+' ; ' + horario.idMedicamento.toString());
+//          result = await helper.insertHorario(horario);
+//        }
+//      }
+//    }
+//  }
+
+      for(int i = 0 ; i <timeofday.length;i++){
+        result = await helper.updateHorario(horario,medicamento);
+      }
+
     } else { // Case 2: Insert Operation
+      //medicamento.id = getid+1;
       result = await helper.insertMedicamento(medicamento);
-      _savehorario();
+
+      if(result!=0){
+        _savehorario();
+      }
+//      if(horario.idMedicamento!=null){
+//        for(int i = 0 ; i <timeofday.length;i++){
+//          result = await helper.updateHorario(horario,medicamento);
+//        }
+//
+//      }
     }
+    moveToLastScreen();
+    }
+    void insertlisthora(int id){
+      Future<List<Horario>> horalistFuture = helper.getHorarioListEditar(id);
+      horalistFuture.then((noteList) {
+        setState(() {
+          this.horarioList = noteList;
+          this.contadorlistahora = noteList.length;
+          for(int i = 0 ; i <contadorlistahora ;i++){
+            print(horarioList[i].hora);
+              addItemToListString(horarioList[i].hora);
+            }
+        });
+      });
     }
 }

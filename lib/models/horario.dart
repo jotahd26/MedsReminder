@@ -15,7 +15,9 @@ class Horario {
 
   int get idMedicamento => _idMedicamento;
 
-
+  set id(int newid){
+    this.id=newid;
+  }
   set hora(String newHora) {
     if (newHora.length <= 255) {
       this._hora = newHora;
