@@ -73,6 +73,10 @@ class _State extends State<PaginaMedicamento> {
 
   void EditarMedicamento(){
     setState(() {
+      dropdownValue=tipoList.last;
+      dropdownValueFrequencia=frequenciaList.first;
+      updateTipo(dropdownValue);
+      updateFrequencia(dropdownValueFrequencia);
       if( appBarTitle=="Editar Medicamento"){
         if(medicamento.estado==1){
           nomeestado="Ativado";
@@ -85,11 +89,6 @@ class _State extends State<PaginaMedicamento> {
         insertlisthora(medicamento.id);
         newValueTipoMedicamento = medicamento.tipo;
         newValueFrequencia= medicamento.frequencia;
-        dropdownValue=tipoList.last;
-        dropdownValueFrequencia=frequenciaList.first;
-
-        updateTipo(dropdownValue);
-        updateFrequencia(dropdownValueFrequencia);
         //Inicializar os valores quando edito
         nomeController.text = medicamento.nome;
         tipoController.text = medicamento.tipo;
@@ -379,11 +378,13 @@ class _State extends State<PaginaMedicamento> {
                         children: <Widget>[
                           new Text('Quantidade em stock:',style: TextStyle(fontSize: 18)),
                           TextFormField(
+
                             //key:keyStock,
                             controller: stockController,
                             keyboardType: TextInputType.number,
                             //inputFormatters: ,
                             decoration: InputDecoration(
+                              hintText: "Introduza a quantida do medicamento",
                               enabledBorder: new UnderlineInputBorder(
 
                                 borderSide: new BorderSide(color: Colors.green.shade800,width: 2),
@@ -412,6 +413,7 @@ class _State extends State<PaginaMedicamento> {
                           TextFormField(
                             controller: nomeUtilizadorController,
                             decoration: InputDecoration(
+                              hintText: "Introduza o nome de utilizador",
                               enabledBorder: new UnderlineInputBorder(
                                 borderSide: new BorderSide(color: Colors.green.shade800,width: 2),
                               ),
