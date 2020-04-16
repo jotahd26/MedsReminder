@@ -33,24 +33,25 @@ class _State extends State<PaginaMedicamento> {
   final TextEditingController tipoController = TextEditingController();
   final TextEditingController frequenciaController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
+  final TextEditingController nomeUtilizadorController = TextEditingController();
 
   _State(this.medicamento,this.horario, this.appBarTitle);
   List<String> timeofday = [];
   static TimeOfDay t = TimeOfDay.now();
   List<String> csv = new List();
   GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
-  GlobalKey<AutoCompleteTextFieldState<String>> keyStock = new GlobalKey();
-  String newValue;
+  String newValueTipoMedicamento;
   String newValueFrequencia;
   String dropdownValue;
   String dropdownValueFrequencia;
   double listhorasheight=0;
   int ultimo_id_medicamento;
   final _nomeFocus = FocusNode();
-  bool editado;
-  bool estado=false;
+  bool editar=false;
   int contadorlistahora = 0;
   int o;
+  bool ativado;
+  String nomeestado;
   @override
   void initState() {
     // TODO: implement initState
@@ -58,7 +59,7 @@ class _State extends State<PaginaMedicamento> {
     getIdUltimoInserido();
     getIdhora();
     medicamento = Medicamento.fromMapObject(widget.medicamento.toMap());
-    getDropDownItem();
+    EditarMedicamento();
     loadCSV();
   }
   List <String> tipoList= ["Ampolas", "Aplicações", "Capsulas", "Colher de cha", "Colher de sopa","Gota","Grama","Inalações","Injeção","Miligrama","Mililitro","Pedaço","Penso","Pilula","Spray","Supositório","UI","Unidade"];
@@ -70,16 +71,19 @@ class _State extends State<PaginaMedicamento> {
     o = await helper.getCountHorario();
   }
 
-  void getDropDownItem(){
+  void EditarMedicamento(){
     setState(() {
-      if(medicamento.tipo!=null){
-        //estado = true;
-        if(medicamento.nome!=null){
-          editado=true;
+      if( appBarTitle=="Editar Medicamento"){
+        if(medicamento.estado==1){
+          nomeestado="Ativado";
+          ativado=true;
+        }else{
+          nomeestado="Desativado";
+          ativado=false;
         }
-        //edição das horas
+        editar=true;
         insertlisthora(medicamento.id);
-        newValue = medicamento.tipo;
+        newValueTipoMedicamento = medicamento.tipo;
         newValueFrequencia= medicamento.frequencia;
         dropdownValue=tipoList.last;
         dropdownValueFrequencia=frequenciaList.first;
@@ -91,6 +95,7 @@ class _State extends State<PaginaMedicamento> {
         tipoController.text = medicamento.tipo;
         frequenciaController.text = medicamento.frequencia;
         stockController.text=medicamento.stock;
+        nomeUtilizadorController.text = medicamento.nomeUtilizador;
       }
     });
   }
@@ -99,6 +104,14 @@ class _State extends State<PaginaMedicamento> {
     setState(() {
       if (field == "tag"){
         visibilityTextAlert= visibility;
+      }
+    });
+  }
+  bool visibilityTextAlert2 = false;
+  void _changed2(bool visibility, String field) {
+    setState(() {
+      if (field == "tag1"){
+        visibilityTextAlert2= visibility;
       }
     });
   }
@@ -128,6 +141,45 @@ class _State extends State<PaginaMedicamento> {
         padding: EdgeInsets.all(10.0),
         child: Column(
           children: <Widget>[
+            editar?Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(20, 10.0, 20.0, 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Text("Ativar/Desativar medicamento",style: TextStyle(fontSize: 18)),
+                          new RaisedButton(
+                            child: new Text(nomeestado),
+                            textColor: Colors.white,
+                            shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(30.0),
+                            ),
+                            color: ativado ? Colors.green : Colors.red,
+                            onPressed: () {
+                              setState(() {
+                                if(nomeestado=="Ativado")
+                                {
+                                  nomeestado="Desativado";
+                                  medicamento.estado=0;
+                                }
+                                else{
+                                  nomeestado="Ativado";
+                                  medicamento.estado=1;
+                                }
+                                ativado = !ativado;
+
+                              });
+                            }
+                          ),
+                        ],
+                      )
+                  ),
+                ],
+              ),
+            ):Container(),
             Card(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -196,7 +248,7 @@ class _State extends State<PaginaMedicamento> {
                           height: 2,
                           color: Colors.green.shade800,
                         ),
-                        value: newValue==""? dropdownValue : newValue,
+                        value: newValueTipoMedicamento==""? dropdownValue : newValueTipoMedicamento,
                         items: tipoList.map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -206,8 +258,8 @@ class _State extends State<PaginaMedicamento> {
                         onChanged: (valueSelected) {
                           setState(() {
                             dropdownValue = valueSelected;
-                            if(newValue!=""){
-                              newValue=valueSelected;
+                            if(newValueTipoMedicamento!=""){
+                              newValueTipoMedicamento=valueSelected;
                             }
                             updateTipo(valueSelected);
                           });
@@ -283,6 +335,7 @@ class _State extends State<PaginaMedicamento> {
                         ],
                   ),
             ),
+            visibilityTextAlert2 ? Text('Precisa de adicionar pelo menos uma hora',style: TextStyle(color: Colors.red),) : new Container(),
       new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -346,6 +399,33 @@ class _State extends State<PaginaMedicamento> {
                 ],
               ),
             ),
+            Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(20, 10.0, 20.0, 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          new Text('Caso seja cuidador preencha com o nome da pessoa que cuida:',style: TextStyle(fontSize: 18)),
+                          TextFormField(
+                            controller: nomeUtilizadorController,
+                            decoration: InputDecoration(
+                              enabledBorder: new UnderlineInputBorder(
+                                borderSide: new BorderSide(color: Colors.green.shade800,width: 2),
+                              ),
+                            ),
+                            onChanged: (texto){
+                              medicamento.nomeUtilizador=texto;
+                            },
+                          )
+                        ],
+                      )
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 10),
             //Texto -> Frequência
           ],
@@ -363,7 +443,11 @@ class _State extends State<PaginaMedicamento> {
           onPressed: (){
             if(medicamento.nome != "")
             {
-              _save();
+              if(timeofday.length!=0){
+                _save();
+              }else{
+                _changed2(true, "tag1");
+              }
             }else{
               //_exibeAviso();
               _changed(true, "tag");

@@ -17,6 +17,9 @@ class DatabaseHelper {
   String colTipo = 'tipo';
   String colFrequencia = 'frequencia';
   String colStock = 'stock';
+  String colEstado = 'estado';
+  String colNomeUtilizador = 'nomeUtilizador';
+
   //Tabela Horario
   String horarioTable='horario';
   String colIdHorario = 'id';
@@ -57,7 +60,7 @@ class DatabaseHelper {
 
 
     await db.execute('CREATE TABLE $medicamentoTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colNome TEXT, '
-        '$colTipo TEXT, $colFrequencia TEXT, $colStock TEXT)');
+        '$colTipo TEXT, $colFrequencia TEXT, $colStock TEXT,$colNomeUtilizador TEXT,$colEstado INTEGER)');
     //, FOREING KEY ($colIdMedicamento) REFERENCES $medicamentoTable($colId)
     String enablefk ="PRAGMA foreign_keys = ON";
     await db.execute(enablefk);

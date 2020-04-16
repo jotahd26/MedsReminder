@@ -6,28 +6,37 @@ class Medicamento {
   String _tipo;
   String _frequencia;
   String _stock;
+  String _nomeUtilizador;
+  int _estado;
 
 
-  Medicamento(this._nome, this._tipo,this._frequencia,this._stock);
+  Medicamento(this._nome, this._tipo,this._frequencia,this._stock,this._nomeUtilizador,this._estado);
 
-  Medicamento.withId(this._id, this._nome, this._tipo,this._frequencia,this._stock);
+  Medicamento.withId(this._id, this._nome, this._tipo,this._frequencia,this._stock,this._nomeUtilizador,this._estado);
 
   int get id => _id;
-
   String get nome => _nome;
-
   String get tipo => _tipo;
-
   String get frequencia => _frequencia;
-
   String get stock =>_stock;
+  String get nomeUtilizador =>_nomeUtilizador;
+  int get estado =>_estado;
 
 //  set id(int newid) {
 //      this._id = newid;
 //  }
+  set estado(int newEstado) {
+      this._estado = newEstado;
+  }
+
   set nome(String newNome) {
     if (newNome.length <= 255) {
       this._nome = newNome;
+    }
+  }
+  set nomeUtilizador(String newNomeU) {
+    if (newNomeU.length <= 255) {
+      this._nomeUtilizador = newNomeU;
     }
   }
   set frequencia(String newFrequencia) {
@@ -54,6 +63,9 @@ class Medicamento {
     map['tipo'] = _tipo;
     map['frequencia'] = _frequencia;
     map['stock']=_stock;
+    map['nomeUtilizador']=_nomeUtilizador;
+    map['estado']=_estado;
+
 
     return map;
   }
@@ -65,6 +77,8 @@ class Medicamento {
     this._tipo = map['tipo'];
     this._frequencia = map['frequencia'];
     this._stock=map['stock'];
+    this._nomeUtilizador=map['nomeUtilizador'];
+    this._estado= map['estado'];
   }
 }
 

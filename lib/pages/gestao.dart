@@ -61,8 +61,7 @@ void initState() {
               disabledTextColor: Colors.black,
               icon: Icon(Icons.add),
               onPressed: () {
-                debugPrint('FAB clicked');
-                navigateToDetail(Medicamento('', '','',''),Horario('',0), 'Adicionar Medicamento');
+                navigateToDetail(Medicamento('', '','','','',1),Horario('',0), 'Adicionar Medicamento');
               },
             ),
             Expanded(
