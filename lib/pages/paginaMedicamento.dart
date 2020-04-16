@@ -73,10 +73,12 @@ class _State extends State<PaginaMedicamento> {
 
   void EditarMedicamento(){
     setState(() {
-      dropdownValue=tipoList.last;
-      dropdownValueFrequencia=frequenciaList.first;
-      updateTipo(dropdownValue);
-      updateFrequencia(dropdownValueFrequencia);
+      if( appBarTitle=="Adicionar Medicamento"){
+        dropdownValue=tipoList.last;
+        dropdownValueFrequencia=frequenciaList.first;
+        updateTipo(dropdownValue);
+        updateFrequencia(dropdownValueFrequencia);
+      }
       if( appBarTitle=="Editar Medicamento"){
         if(medicamento.estado==1){
           nomeestado="Ativado";
