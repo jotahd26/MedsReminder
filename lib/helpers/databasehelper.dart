@@ -118,9 +118,9 @@ class DatabaseHelper {
     int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdMedicamento=$idmedicamento' );
     return result;
   }
-  Future<int> deleteHorario(int id,int idmedicamento) async {
+  Future<int> deleteHorario(int id) async {
     var db = await this.database;
-    int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdHorario = $id and $colIdMedicamento=$idmedicamento' );
+    int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdHorario = $id');
     return result;
   }
 
@@ -134,6 +134,12 @@ class DatabaseHelper {
   Future<int> getCountHorario() async {
     Database db = await this.database;
     List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $horarioTable');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
+  Future<int> getFutureIDHorario() async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$horarioTable"');
     int result = Sqflite.firstIntValue(x);
     return result;
   }

@@ -37,6 +37,8 @@ class _State extends State<PaginaMedicamento> {
 
   _State(this.medicamento,this.horario, this.appBarTitle);
   List<String> timeofday = [];
+  List<String> timeofdaydelete = [];
+  List<String> timeofdayadicionar = [];
   static TimeOfDay t = TimeOfDay.now();
   List<String> csv = new List();
   GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
@@ -50,6 +52,7 @@ class _State extends State<PaginaMedicamento> {
   bool editar=false;
   int contadorlistahora = 0;
   int o;
+  int o2;
   bool ativado;
   String nomeestado;
   @override
@@ -58,6 +61,7 @@ class _State extends State<PaginaMedicamento> {
     super.initState();
     getIdUltimoInserido();
     getIdhora();
+    getfuturoid();
     medicamento = Medicamento.fromMapObject(widget.medicamento.toMap());
     EditarMedicamento();
     loadCSV();
@@ -69,6 +73,9 @@ class _State extends State<PaginaMedicamento> {
   }
   void getIdhora() async{
     o = await helper.getCountHorario();
+  }
+  void getfuturoid() async{
+    o2 = await helper.getFutureIDHorario();
   }
 
   void EditarMedicamento(){
@@ -356,6 +363,7 @@ class _State extends State<PaginaMedicamento> {
                   trailing: GestureDetector(
                   child: Icon(Icons.delete, color: Colors.grey,),
                   onTap: () {
+                  deleteItemToListString(timeofday[position]);
                   apagarHoradalista(context,position);
 
                   //_confirmaExclusao(context, medicamentosList[position]);
@@ -475,7 +483,15 @@ class _State extends State<PaginaMedicamento> {
       //horario.hora = time.format(context);
       //horario.idMedicamento = 4;
       listhorasheight+=70;
+      if(editar==true){
+        timeofdayadicionar.insert(0,time.format(context));
+      }
       timeofday.insert(0,time.format(context));
+    });
+  }
+  void deleteItemToListString(String time){
+    setState(() {
+      timeofdaydelete.insert(0,time);
     });
   }
   void addItemToListString(String time){
@@ -483,6 +499,7 @@ class _State extends State<PaginaMedicamento> {
       //horario.hora = time.format(context);
       //horario.idMedicamento = 4;
       listhorasheight+=70;
+
       timeofday.insert(0,time);
     });
   }
@@ -532,13 +549,39 @@ class _State extends State<PaginaMedicamento> {
           if(ultimo_id_medicamento!=null){
             int p = ultimo_id_medicamento+1;
             horario.idMedicamento=p;
+            //horario.id=o2+1;
           }
           else{
             horario.idMedicamento=1;
+            //horario.id=1;
           }
 
           //horario.idMedicamento = medicamento.id;
+          print(horario.id);
           result = await helper.insertHorario(horario);
+        }
+      }
+      if(editar==true){
+        for(int x=0;x<contadorlistahora;x++){
+          for(int i=0;i<timeofdaydelete.length;i++){
+            if(horarioList[x].hora==timeofdaydelete[i]){
+              int result2= await helper.deleteHorario(horarioList[x].id);
+              print("valor a apagar"+horarioList[x].hora);
+            }
+          }
+        }
+        for(int x=0;x<contadorlistahora;x++){
+          for(int i=0;i<timeofdayadicionar.length;i++){
+            print(timeofdayadicionar[i]);
+            if(horarioList[x].hora.contains(timeofdayadicionar[i])==false){
+              print(horario.id);
+              horario.idMedicamento = medicamento.id;
+              horario.hora=timeofdayadicionar[i];
+              //horario.id=o2+1;
+              //int result2= await helper.insertHorario(horario);
+              print("valor a acrescentar "+timeofdayadicionar[i]);
+            }
+          }
         }
       }
     }
@@ -547,26 +590,16 @@ class _State extends State<PaginaMedicamento> {
     int result;
     if (medicamento.id != null) {  // Case 1: Update operation
       result = await helper.updateMedicamento(medicamento);
+      _savehorario();
+      //comparar as tabelas
+      //caso lista timeofday tenha um novo elemento adiciono esse elemento a tabela horario
+      //caso lista timeofday tenha um elemento a menos que tinha na tabela horario apagamos esse elemento
 
-//      if(horarioList!=null){
-//        if(timeofday.length!=contadorlistahora){
-//      for(int i=0;i<timeofday.length;i++){
-//        bool p = horarioList[i].hora.contains(timeofday[i]);
-//        if(p!=true){
-//          getIdhora();
-//          horario.id=o+1;
-//          horario.hora=timeofday[i];
-//          horario.idMedicamento=medicamento.id;
-//          print((horario.id).toString() + ' ; ' + horario.hora+' ; ' + horario.idMedicamento.toString());
-//          result = await helper.insertHorario(horario);
-//        }
+
+
+//      for(int i = 0 ; i <timeofday.length;i++){
+//        result = await helper.updateHorario(horario,medicamento);
 //      }
-//    }
-//  }
-
-      for(int i = 0 ; i <timeofday.length;i++){
-        result = await helper.updateHorario(horario,medicamento);
-      }
 
     } else { // Case 2: Insert Operation
       //medicamento.id = getid+1;
@@ -594,7 +627,7 @@ class _State extends State<PaginaMedicamento> {
             print(horarioList[i].hora);
               addItemToListString(horarioList[i].hora);
             }
-        });
+          });
       });
     }
 }

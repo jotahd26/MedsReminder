@@ -65,32 +65,32 @@ void initState() {
               },
             ),
             Expanded(
-                child: ListView.builder(
-                  itemCount: count,
-                  padding: EdgeInsets.all(10.0),
-                  itemBuilder: (BuildContext context, int position) {
-                    return Card(
-                      color: Colors.white,
-                      elevation: 2.0,
-                      child: ListTile(
-                        title: Text(this.medicamentosList[position].nome),
-                        subtitle: Text(this.medicamentosList[position].tipo),
-                        trailing: GestureDetector(
-                          child: Icon(Icons.delete, color: Colors.grey,),
-                          onTap: () {
-                              _delete(context, medicamentosList[position]);
-                              //_confirmaExclusao(context, medicamentosList[position]);
-                          },
-                        ),
-                        onTap: () {
-                          debugPrint("ListTile Tapped");
-                          navigateToDetail(this.medicamentosList[position],this.horarioList[position],'Editar Medicamento');
-                        },
+                    child:ListView.builder(
+                      itemCount: count,
+                      padding: EdgeInsets.all(10.0),
+                      itemBuilder: (BuildContext context, int position) {
+                        return Card(
+                          color: Colors.white,
+                          elevation: 2.0,
+                          child: ListTile(
+                            title: Text(this.medicamentosList[position].nome),
+                            subtitle: Text(this.medicamentosList[position].tipo),
+                            trailing: GestureDetector(
+                              child: Icon(Icons.delete, color: Colors.grey,),
+                              onTap: () {
+                                _delete(context, medicamentosList[position]);
+                                //_confirmaExclusao(context, medicamentosList[position]);
+                              },
+                            ),
+                            onTap: () {
+                              debugPrint("ListTile Tapped");
+                              navigateToDetail(this.medicamentosList[position],this.horarioList[position],'Editar Medicamento');
+                            },
 
-                      ),
-                    );
-                  },
-                )
+                          ),
+                        );
+                      },
+                    )
             ),
           ]
       )
