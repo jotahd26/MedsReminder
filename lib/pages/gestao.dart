@@ -84,7 +84,7 @@ void initState() {
                             ),
                             onTap: () {
                               debugPrint("ListTile Tapped");
-                              navigateToDetail(this.medicamentosList[position],this.horarioList[position],'Editar Medicamento');
+                              navigateToDetail(this.medicamentosList[position],Horario('',0),'Editar Medicamento');
                             },
 
                           ),

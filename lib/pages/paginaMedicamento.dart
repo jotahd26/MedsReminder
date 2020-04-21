@@ -61,7 +61,7 @@ class _State extends State<PaginaMedicamento> {
     super.initState();
     getIdUltimoInserido();
     getIdhora();
-    getfuturoid();
+    //contadorComparacao();
     medicamento = Medicamento.fromMapObject(widget.medicamento.toMap());
     EditarMedicamento();
     loadCSV();
@@ -74,9 +74,9 @@ class _State extends State<PaginaMedicamento> {
   void getIdhora() async{
     o = await helper.getCountHorario();
   }
-  void getfuturoid() async{
-    o2 = await helper.getFutureIDHorario();
-  }
+//  void contadorComparacao() async{
+//    o2 = await helper.contadorcomparacao("");
+//  }
 
   void EditarMedicamento(){
     setState(() {
@@ -557,7 +557,6 @@ class _State extends State<PaginaMedicamento> {
           }
 
           //horario.idMedicamento = medicamento.id;
-          print(horario.id);
           result = await helper.insertHorario(horario);
         }
       }
@@ -566,20 +565,18 @@ class _State extends State<PaginaMedicamento> {
           for(int i=0;i<timeofdaydelete.length;i++){
             if(horarioList[x].hora==timeofdaydelete[i]){
               int result2= await helper.deleteHorario(horarioList[x].id);
-              print("valor a apagar"+horarioList[x].hora);
+              //print("valor a apagar"+horarioList[x].hora);
             }
           }
         }
         for(int x=0;x<contadorlistahora;x++){
           for(int i=0;i<timeofdayadicionar.length;i++){
-            print(timeofdayadicionar[i]);
-            if(horarioList[x].hora.contains(timeofdayadicionar[i])==false){
-              print(horario.id);
+            int l = await helper.contadorcomparacao(timeofdayadicionar[i],medicamento.id);
+            if(l==0){
               horario.idMedicamento = medicamento.id;
               horario.hora=timeofdayadicionar[i];
-              //horario.id=o2+1;
-              //int result2= await helper.insertHorario(horario);
-              print("valor a acrescentar "+timeofdayadicionar[i]);
+              //print("valor a acrescentar "+timeofdayadicionar[i]);
+              int result= await helper.insertHorario(horario);
             }
           }
         }

@@ -4,6 +4,7 @@ import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/utils/utils.dart';
 
 class DatabaseHelper {
 
@@ -137,9 +138,9 @@ class DatabaseHelper {
     int result = Sqflite.firstIntValue(x);
     return result;
   }
-  Future<int> getFutureIDHorario() async {
+  Future<int> contadorcomparacao(String hora,int id) async {
     Database db = await this.database;
-    List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$horarioTable"');
+    List<Map<String, dynamic>> x = await db.rawQuery('select count (*) from $horarioTable where $colHora="$hora" and $colIdMedicamento=$id');
     int result = Sqflite.firstIntValue(x);
     return result;
   }
