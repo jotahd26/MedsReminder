@@ -74,10 +74,6 @@ class _State extends State<PaginaMedicamento> {
   void getIdhora() async{
     o = await helper.getCountHorario();
   }
-//  void contadorComparacao() async{
-//    o2 = await helper.contadorcomparacao("");
-//  }
-
   void EditarMedicamento(){
     setState(() {
       if( appBarTitle=="Adicionar Medicamento"){
@@ -543,20 +539,16 @@ class _State extends State<PaginaMedicamento> {
   void _savehorario() async{
     int result;
       if(medicamento.id==null){
-      //problema, se a tabela medicamentos não tiver valor, proximo id vai ser igual ao ultimo inserido, a tabela horario nao recebe
       for(int i=0; i<timeofday.length;i++){
           horario.hora=timeofday[i];
           if(ultimo_id_medicamento!=null){
             int p = ultimo_id_medicamento+1;
             horario.idMedicamento=p;
-            //horario.id=o2+1;
           }
           else{
             horario.idMedicamento=1;
-            //horario.id=1;
           }
 
-          //horario.idMedicamento = medicamento.id;
           result = await helper.insertHorario(horario);
         }
       }
@@ -588,29 +580,11 @@ class _State extends State<PaginaMedicamento> {
     if (medicamento.id != null) {  // Case 1: Update operation
       result = await helper.updateMedicamento(medicamento);
       _savehorario();
-      //comparar as tabelas
-      //caso lista timeofday tenha um novo elemento adiciono esse elemento a tabela horario
-      //caso lista timeofday tenha um elemento a menos que tinha na tabela horario apagamos esse elemento
-
-
-
-//      for(int i = 0 ; i <timeofday.length;i++){
-//        result = await helper.updateHorario(horario,medicamento);
-//      }
-
-    } else { // Case 2: Insert Operation
-      //medicamento.id = getid+1;
+    } else {
       result = await helper.insertMedicamento(medicamento);
-
       if(result!=0){
         _savehorario();
       }
-//      if(horario.idMedicamento!=null){
-//        for(int i = 0 ; i <timeofday.length;i++){
-//          result = await helper.updateHorario(horario,medicamento);
-//        }
-//
-//      }
     }
     moveToLastScreen();
     }
