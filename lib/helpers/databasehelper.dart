@@ -199,5 +199,51 @@ class DatabaseHelper {
 
     return noteList;
   }
+  Future<List<Map<String, dynamic>>> getmedicamentohoralist(int id) async {
+    Database db = await this.database;
 
+    var result = await db.rawQuery('SELECT * FROM $medicamentoTable where $colId=$id');
+    //var result = await db.query(noteTable, orderBy: '$colPriority ASC');
+    return result;
+  }
+  Future<List<Medicamento>> getMedicamentoEvento2(int id) async {
+
+    var noteMapList = await getmedicamentohoralist(id); // Get 'Map List' from database
+    int count = noteMapList.length;         // Count the number of map entries in db table
+
+    List<Medicamento> noteList = List<Medicamento>();
+    // For loop to create a 'Note List' from a 'Map List'
+    for (int i = 0; i < count; i++) {
+      noteList.add(Medicamento.fromMapObject(noteMapList[i]));
+    }
+
+    return noteList;
+  }
+
+
+  Future<List<Horario>> getMedicamentoEvento(int id) async {
+
+    var noteMapList = await gethoraIDMedicamento(id); // Get 'Map List' from database
+    int count = noteMapList.length;         // Count the number of map entries in db table
+
+    List<Horario> noteList = List<Horario>();
+    // For loop to create a 'Note List' from a 'Map List'
+    for (int i = 0; i < count; i++) {
+      noteList.add(Horario.fromMapObject(noteMapList[i]));
+    }
+
+    return noteList;
+  }
+  Future<String> str(int id) async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.rawQuery('select $colNome from $medicamentoTable where $colId=$id');
+    String result = Sqflite.firstIntValue(x).toString();
+    return result;
+  }
+//  Future<String> getmedicamentonome(int id) async {
+//    Database db = await this.database;
+//
+//    var result = await db.query('SELECT "$colNome" FROM $medicamentoTable where $colId=$id');
+//    return result;
+//  }
 }
