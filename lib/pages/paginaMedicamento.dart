@@ -548,7 +548,6 @@ class _State extends State<PaginaMedicamento> {
           else{
             horario.idMedicamento=1;
           }
-
           result = await helper.insertHorario(horario);
         }
       }

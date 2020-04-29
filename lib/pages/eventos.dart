@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
@@ -28,6 +25,7 @@ class _State extends State<Eventos> {
   Medicamento medicamento;
   Horario horario;
   List<Horario> horarioList;
+
   List<Medicamento> medicamentoList;
   int contadorlistahora = 0;
   int contadorlistamedicamento = 0;
@@ -37,7 +35,6 @@ class _State extends State<Eventos> {
   List<String> NomeMedicamentos=[];
   List<String> TipoMedicamentos=[];
   List<String> UserMedicamentos=[];
-  Timer _timer;
   bool carregado=false;
   @override
   void initState() {
@@ -45,51 +42,36 @@ class _State extends State<Eventos> {
     super.initState();
     insertlisthora();
   }
-  _State(){
 
+  _State(){
     Timer(Duration(seconds: 3), () {
       setState(() {
         if(carregado==false)
         carregado=true;
       });
-
     });
   }
 
-
-  void o(int p) async{
-    for(int i=0;i<contadorlistahora;i++){
-      if(p==horarioList[i].idMedicamento)
-      o3 = await helper.str(horarioList[i].idMedicamento);
-    }
-  }
   @override
   Widget build(BuildContext context) {
 
       return
         Scaffold(
           appBar: AppBar(
-            title: Text("Events"),
+            title: Text("Eventos"),
             centerTitle: true,
             backgroundColor: Colors.green.shade800,
           ),
-          body: initScreen(context),
-        );
-  }
-  initScreen(BuildContext context) {
-    return Scaffold(
-        body:
-        Column(
-          children: <Widget>[
+          body: Column(
+            children: <Widget>[
+              carregado ? Expanded(
+                  child:
+                  ListView.builder(
 
-            carregado ? Expanded(
-                child:
-                ListView.builder(
-
-                    itemCount: contadorlistahora,
-                    padding: EdgeInsets.all(10.0),
-                    itemBuilder: (BuildContext context, int position) {
-                      return  Card(
+                      itemCount: contadorlistahora,
+                      padding: EdgeInsets.all(10.0),
+                      itemBuilder: (BuildContext context, int position) {
+                        return  Card(
 
                             color: Colors.white,
                             elevation: 2.0,
@@ -132,28 +114,14 @@ class _State extends State<Eventos> {
                               ),
                             )
                         );
-                    }
-                )
-            ): new Container(child: Text("A carregar dados..."),)
-          ],
-        )
-
-    );
+                      }
+                  )
+              ): new Container(child: Text("A carregar dados..."),)
+            ],
+          )
+        );
   }
-
-void delay(){
-  if(NomeMedicamento==null){
-    new Future.delayed(const Duration(seconds: 4));
-  }
-  if(TipoMedicamentos==null){
-    new Future.delayed(const Duration(seconds: 4));
-  }
-  if(UserMedicamentos==null){
-    new Future.delayed(const Duration(seconds: 4));
-  }
-}
   void insertlistmedicamento(int id) async{
-
     Future<List<Medicamento>> horalistFuture = helper.getMedicamentoEvento2(id);
     horalistFuture.then((noteList) {
       setState(() {
@@ -177,6 +145,9 @@ void delay(){
         this.horarioList = noteList;
         this.contadorlistahora = noteList.length;
         for(int i=0;i<contadorlistahora;i++){
+          horarioList.sort((a, b) {
+            return a.hora.toLowerCase().compareTo(b.hora.toLowerCase());
+          });
           if(horarioList[i].idMedicamento!=null){
             insertlistmedicamento(horarioList[i].idMedicamento);
           }

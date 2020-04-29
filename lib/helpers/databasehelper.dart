@@ -124,14 +124,6 @@ class DatabaseHelper {
     int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdHorario = $id');
     return result;
   }
-
-  // Get number of Note objects in database
-  Future<int> getCount() async {
-    Database db = await this.database;
-    List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$horarioTable"');
-    int result = Sqflite.firstIntValue(x);
-    return result;
-  }
   Future<int> getCountHorario() async {
     Database db = await this.database;
     List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $horarioTable');
@@ -219,31 +211,4 @@ class DatabaseHelper {
 
     return noteList;
   }
-
-
-  Future<List<Horario>> getMedicamentoEvento(int id) async {
-
-    var noteMapList = await gethoraIDMedicamento(id); // Get 'Map List' from database
-    int count = noteMapList.length;         // Count the number of map entries in db table
-
-    List<Horario> noteList = List<Horario>();
-    // For loop to create a 'Note List' from a 'Map List'
-    for (int i = 0; i < count; i++) {
-      noteList.add(Horario.fromMapObject(noteMapList[i]));
-    }
-
-    return noteList;
-  }
-  Future<String> str(int id) async {
-    Database db = await this.database;
-    List<Map<String, dynamic>> x = await db.rawQuery('select $colNome from $medicamentoTable where $colId=$id');
-    String result = Sqflite.firstIntValue(x).toString();
-    return result;
-  }
-//  Future<String> getmedicamentonome(int id) async {
-//    Database db = await this.database;
-//
-//    var result = await db.query('SELECT "$colNome" FROM $medicamentoTable where $colId=$id');
-//    return result;
-//  }
 }
