@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
+import 'package:myflutterproject/pages/paginaConfirmacao.dart';
 
 
 void main() => runApp(App());
@@ -95,24 +96,14 @@ class _State extends State<Eventos> {
                               ),
                               subtitle: Text("${UserMedicamentos[position]}"),
                               //isThreeLine: true,
-                              trailing: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  text: "Remaining 4h\n",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .title
-                                      .copyWith(fontSize: 14, fontWeight: FontWeight.bold),
-                                  children: [
-                                    TextSpan(
-                                      text: "${horarioList[position].hora}",
+                              trailing: Text(horarioList[position].hora,
                                       style: Theme.of(context).textTheme.subtitle.copyWith(
                                         fontSize: 16,
                                       ),
-                                    ),
-                                  ],
-                                ),
                               ),
+                              onTap: () {
+                                navigateToDetail(this.horarioList[position]);
+                              },
                             )
                         );
                       }
@@ -203,5 +194,12 @@ class _State extends State<Eventos> {
         }
       });
     });
+  }
+  void navigateToDetail(Horario horario) async {
+    bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Confirmacao(horario);
+    }));
+    if (result == true) {
+    }
   }
 }

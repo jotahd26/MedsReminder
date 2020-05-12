@@ -6,7 +6,6 @@ class Horario {
   int _idMedicamento;
 
   Horario(this._hora, this._idMedicamento);
-
   Horario.withId(this._id, this._hora, this._idMedicamento);
 
   int get id => _id;
