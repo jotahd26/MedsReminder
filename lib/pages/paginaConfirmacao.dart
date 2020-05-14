@@ -24,6 +24,7 @@ class _State extends State<Confirmacao> {
   Eventos eventos;
   List<Medicamento> medicamentoList;
   int contador = 0;
+  bool confirmado=false;
   String nomeM="";
   String tipoM="";
   String userM="";
@@ -58,7 +59,7 @@ class _State extends State<Confirmacao> {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10.0),
-        child: Column (
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text ("Dia: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
@@ -80,12 +81,13 @@ class _State extends State<Confirmacao> {
             o==true ? Text("Cuidador de: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left):Container(),
             SizedBox(height: 10),
             o==true ? Text(userM,style: TextStyle(fontSize: 24),textAlign: TextAlign.left):Container(),
+            confirmado==true ? Text("Vocé ja registou esta toma",style: TextStyle(fontSize: 30,color: Colors.green,fontWeight: FontWeight.bold)):Container(),
           ]
         )
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(8.0),
-        child: FlatButton(
+        child: confirmado==false?FlatButton(
           color: Colors.blue,
           textColor: Colors.white,
           disabledColor: Colors.grey,
@@ -97,6 +99,18 @@ class _State extends State<Confirmacao> {
           child: Text(
             "Confirmar toma",
             style: TextStyle(fontSize: 18),),
+        ):FlatButton(
+          color: Colors.red.shade700,
+          textColor: Colors.white,
+          disabledColor: Colors.grey,
+          disabledTextColor: Colors.black,
+          padding: EdgeInsets.only(left: 18,right: 18),
+          onPressed: (){
+            _delete();
+          },
+          child: Text(
+            "Eliminar toma atual",
+            style: TextStyle(fontSize: 18),),
         ),
       ),
     )
@@ -105,7 +119,13 @@ class _State extends State<Confirmacao> {
   void moveToLastScreen() {
     Navigator.pop(context, true);
   }
-  void inserirdadosmedicamento(){
+  void inserirdadosmedicamento()async{
+    DateTime a = DateTime.now();
+    String b=DateTime(a.year,a.month,a.day).toIso8601String();
+    int l = await helper.getEventosComparacao(horario.id,b);
+    if(l!=0){
+      confirmado=true;
+    }
     Future<List<Medicamento>> medicamentolistFuture = helper.getNoteList();
     medicamentolistFuture.then((noteList) {
       setState(() {
@@ -119,9 +139,8 @@ class _State extends State<Confirmacao> {
             if(userM==null){
               o=true;
             }
-          }
         }
-      });
+      }});
     });
   }
   void _save() async {
@@ -133,8 +152,14 @@ class _State extends State<Confirmacao> {
     int result;
     result = await helper.insertEvento(eventos);
     if(result!=0){
-
     }
+    moveToLastScreen();
+  }
+  void _delete() async {
+    DateTime a = DateTime.now();
+    String b=DateTime(a.year,a.month,a.day).toIso8601String();
+    int result = await helper.deleteEvento(horario.id,b);
+    if (result != 0) {}
     moveToLastScreen();
   }
 }

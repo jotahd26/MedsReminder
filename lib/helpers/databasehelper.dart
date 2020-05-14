@@ -76,7 +76,7 @@ class DatabaseHelper {
     await db.execute('CREATE TABLE $horarioTable($colIdHorario INTEGER PRIMARY KEY AUTOINCREMENT, $colHora TEXT, '
         '$colIdMedicamento INTEGER, FOREIGN KEY ($colIdMedicamento) REFERENCES $medicamentoTable($colId))');
     await db.execute('CREATE TABLE $eventosTable($colIdEvento INTEGER PRIMARY KEY AUTOINCREMENT, $colDataEvento DATETIME, '
-        '$codidMEventos INTEGER,$codidHEventos)');
+        '$codidMEventos INTEGER,$codidHEventos INTEGER)');
   }
 
 
@@ -138,6 +138,11 @@ class DatabaseHelper {
     int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdHorario = $id');
     return result;
   }
+  Future<int> deleteEvento(int idhorario,String dia) async {
+    var db = await this.database;
+    int result = await db.rawDelete('DELETE FROM $eventosTable WHERE $codidHEventos="$idhorario" and $colDataEvento="$dia"');
+    return result;
+  }
   Future<int> getCountHorario() async {
     Database db = await this.database;
     List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $horarioTable');
@@ -154,6 +159,12 @@ class DatabaseHelper {
 
     Database db = await this.database;
     List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$medicamentoTable"');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
+  Future<int> getEventosComparacao(int idhorario,String dia) async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.rawQuery('select count (*) from $eventosTable where $codidHEventos="$idhorario" and $colDataEvento="$dia"');
     int result = Sqflite.firstIntValue(x);
     return result;
   }
@@ -222,7 +233,7 @@ class DatabaseHelper {
     for (int i = 0; i < count; i++) {
       noteList.add(Medicamento.fromMapObject(noteMapList[i]));
     }
-
     return noteList;
   }
+
 }
