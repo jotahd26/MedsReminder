@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
+import 'package:myflutterproject/models/eventos.dart';
 import 'package:myflutterproject/pages/paginaConfirmacao.dart';
 
 
@@ -12,16 +13,16 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Eventos(),
+      home: Horarios(),
     );
   }
 }
-class Eventos extends StatefulWidget {
+class Horarios extends StatefulWidget {
 
   @override
   _State createState() => _State();
 }
-class _State extends State<Eventos> {
+class _State extends State<Horarios> {
   DatabaseHelper helper = DatabaseHelper();
   Medicamento medicamento;
   Horario horario;
@@ -60,7 +61,7 @@ class _State extends State<Eventos> {
       return
         Scaffold(
           appBar: AppBar(
-            title: Text("Eventos"),
+            title: Text("Horário"),
             centerTitle: true,
             backgroundColor: Colors.green.shade800,
           ),
@@ -102,7 +103,7 @@ class _State extends State<Eventos> {
                                       ),
                               ),
                               onTap: () {
-                                navigateToDetail(this.horarioList[position]);
+                                navigateToDetail(this.horarioList[position],Eventos(0,0,DateTime(2000,0,0)));
                               },
                             )
                         );
@@ -195,9 +196,9 @@ class _State extends State<Eventos> {
       });
     });
   }
-  void navigateToDetail(Horario horario) async {
+  void navigateToDetail(Horario horario, Eventos evento) async {
     bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return Confirmacao(horario);
+      return Confirmacao(horario,evento);
     }));
     if (result == true) {
     }

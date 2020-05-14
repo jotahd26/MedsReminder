@@ -32,9 +32,9 @@ class Eventos {
     if (id != null) {
       map['id'] = _id;
     }
-    map['idH'] = _idM;
-    map['idM'] = _idH;
-    map['data'] = _data;
+    map['idH'] = _idH;
+    map['idM'] = _idM;
+    map['data'] = _data.toIso8601String();
     return map;
   }
 
@@ -43,7 +43,7 @@ class Eventos {
     this._id = map['id'];
     this._idM = map['idM'];
     this._idH = map['idH'];
-    this._data = map['data'];
+    this._data = DateTime.parse(map['data']);
   }
 }
 

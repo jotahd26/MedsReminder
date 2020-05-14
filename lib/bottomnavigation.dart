@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/gestao.dart';
 import 'pages/historico.dart';
-import 'pages/eventos.dart';
+import 'pages/horario.dart';
 import 'assets/Icons/my_flutter_app_icons.dart';
 
 void main() => runApp(App());
@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
 
   int _currentIndex = 0;
   final List<Widget> _children = [
-    Eventos(),
+    Horarios(),
     Historico(),
     Gestao()
   ];
@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
 
             icon: Icon(MyFlutterApp.calendar),
             title:
-            Text('Eventos',style: TextStyle(color: Colors.black)),
+            Text('Horário',style: TextStyle(color: Colors.black)),
           ),
           BottomNavigationBarItem(
             icon: Icon(MyFlutterApp.calendar_check_o),

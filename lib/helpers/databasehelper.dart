@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:myflutterproject/models/eventos.dart';
 import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,6 +27,13 @@ class DatabaseHelper {
   String colIdHorario = 'id';
   String colHora = 'hora';
   String colIdMedicamento = 'idMedicamento';
+
+  //Tabela eventos
+  String eventosTable='eventos';
+  String colIdEvento = 'id';
+  String colDataEvento = 'data';
+  String codidMEventos = 'idM';
+  String codidHEventos = 'idH';
 
   //String colDate = 'date';
 
@@ -67,6 +75,8 @@ class DatabaseHelper {
     await db.execute(enablefk);
     await db.execute('CREATE TABLE $horarioTable($colIdHorario INTEGER PRIMARY KEY AUTOINCREMENT, $colHora TEXT, '
         '$colIdMedicamento INTEGER, FOREIGN KEY ($colIdMedicamento) REFERENCES $medicamentoTable($colId))');
+    await db.execute('CREATE TABLE $eventosTable($colIdEvento INTEGER PRIMARY KEY AUTOINCREMENT, $colDataEvento DATETIME, '
+        '$codidMEventos INTEGER,$codidHEventos)');
   }
 
 
@@ -96,7 +106,11 @@ class DatabaseHelper {
     var result = await db.insert(horarioTable, horario.toMap());
     return result;
   }
-
+  Future<int> insertEvento(Eventos evento) async {
+    Database db = await this.database;
+    var result = await db.insert(eventosTable, evento.toMap());
+    return result;
+  }
   // Update Operation: Update a Note object and save it to database
   Future<int> updateMedicamento(Medicamento medicamento) async {
     var db = await this.database;

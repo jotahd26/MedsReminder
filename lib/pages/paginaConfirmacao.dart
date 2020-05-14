@@ -6,26 +6,29 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
+import 'package:myflutterproject/models/eventos.dart';
 class Confirmacao extends StatefulWidget {
   final Horario horario;
-  Confirmacao(this.horario);
+  final Eventos evento;
+  Confirmacao(this.horario,this.evento);
   @override
   State<StatefulWidget> createState() {
 
-    return _State(this.horario);
+    return _State(this.horario,this.evento);
   }
 }
 class _State extends State<Confirmacao> {
   DatabaseHelper helper = DatabaseHelper();
   Medicamento medicamento;
   Horario horario;
+  Eventos eventos;
   List<Medicamento> medicamentoList;
   int contador = 0;
   String nomeM="";
   String tipoM="";
   String userM="";
   bool o = false;
-  _State(this.horario);
+  _State(this.horario,this.eventos);
 
   @override
   void initState() {
@@ -89,6 +92,7 @@ class _State extends State<Confirmacao> {
           disabledTextColor: Colors.black,
           padding: EdgeInsets.only(left: 18,right: 18),
           onPressed: (){
+            _save();
           },
           child: Text(
             "Confirmar toma",
@@ -119,5 +123,18 @@ class _State extends State<Confirmacao> {
         }
       });
     });
+  }
+  void _save() async {
+
+    eventos.idH=horario.id;
+    eventos.idM=horario.idMedicamento;
+    DateTime a = DateTime.now();
+    eventos.data= DateTime(a.year,a.month,a.day);
+    int result;
+    result = await helper.insertEvento(eventos);
+    if(result!=0){
+
+    }
+    moveToLastScreen();
   }
 }
