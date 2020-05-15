@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
         items: [
           BottomNavigationBarItem(
 
-            icon: Icon(MyFlutterApp.calendar),
+            icon: Icon(Icons.alarm),
             title:
             Text('Horário',style: TextStyle(color: Colors.black)),
           ),

@@ -235,5 +235,49 @@ class DatabaseHelper {
     }
     return noteList;
   }
+  Future<List<Map<String, dynamic>>> getListaEventos() async {
+    Database db = await this.database;
+
+    var result = await db.rawQuery('SELECT * FROM $eventosTable');
+    //var result = await db.query(noteTable, orderBy: '$colPriority ASC');
+    return result;
+  }
+  Future<List<Eventos>> getAllEventos() async {
+
+    var noteMapList = await getListaEventos(); // Get 'Map List' from database
+    int count = noteMapList.length;         // Count the number of map entries in db table
+
+    List<Eventos> noteList = List<Eventos>();
+    // For loop to create a 'Note List' from a 'Map List'
+    for (int i = 0; i < count; i++) {
+      noteList.add(Eventos.fromMapObject(noteMapList[i]));
+    }
+    return noteList;
+  }
+
+  Future<List<Map<String, dynamic>>> getListaEventosHorario(int id) async {
+    Database db = await this.database;
+
+    var result = await db.rawQuery('SELECT * FROM $horarioTable where $colIdHorario=$id');
+    //var result = await db.query(noteTable, orderBy: '$colPriority ASC');
+    return result;
+  }
+  Future<List<Horario>> getAllEventosHorario(int id) async {
+
+    var noteMapList = await getListaEventosHorario(id); // Get 'Map List' from database
+    int count = noteMapList.length;         // Count the number of map entries in db table
+
+    List<Horario> noteList = List<Horario>();
+    // For loop to create a 'Note List' from a 'Map List'
+    for (int i = 0; i < count; i++) {
+      noteList.add(Horario.fromMapObject(noteMapList[i]));
+    }
+    return noteList;
+  }
+
+
+
+
+
 
 }
