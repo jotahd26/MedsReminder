@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
@@ -37,6 +38,7 @@ class _State extends State<Horarios> {
   List<String> NomeMedicamentos=[];
   List<String> TipoMedicamentos=[];
   List<String> UserMedicamentos=[];
+  List<String> ImagemMedicamentos=[];
   bool carregado=false;
   @override
   void initState() {
@@ -80,7 +82,17 @@ class _State extends State<Horarios> {
                             color: Colors.white,
                             elevation: 2.0,
                             child: ListTile(
-
+                              leading: Container(
+                                width: 60.0, height: 80.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  image: DecorationImage(
+                                      image: ImagemMedicamentos[position] == null ?
+                                      AssetImage("assets/medicamento.png"):
+                                      FileImage(File(ImagemMedicamentos[position]))
+                                  ),
+                                ),
+                              ),
                               title:RichText(
                                 text: TextSpan(
                                   text: "${NomeMedicamentos[position]}\n",
@@ -174,7 +186,7 @@ class _State extends State<Horarios> {
             NomeMedicamentos.add(medicamentoList[i].nome);
             TipoMedicamentos.add(medicamentoList[i].tipo);
             UserMedicamentos.add(medicamentoList[i].nomeUtilizador);
-            //
+            ImagemMedicamentos.add(medicamentoList[i].imagem);
           }
         }
       });

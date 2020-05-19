@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
@@ -28,6 +29,7 @@ class _State extends State<Confirmacao> {
   String nomeM="";
   String tipoM="";
   String userM="";
+  String imagemM=null;
   bool o = false;
   _State(this.horario,this.eventos);
 
@@ -62,26 +64,39 @@ class _State extends State<Confirmacao> {
         child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text ("Dia: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Container(
+              width: 150.0, height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                image: DecorationImage(
+                    image: imagemM == null ?
+                    AssetImage('assets/medicamento.png'):
+                    FileImage(File(imagemM))
+
+                ),
+              ),
+            ),
             SizedBox(height: 10),
-            Text(DateTime.now().day.toString()+"/"+DateTime.now().month.toString() +"/"+DateTime.now().year.toString(),textAlign: TextAlign.left,style: TextStyle(fontSize: 24)),
+            Text ("Dia: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text("Hora: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Text(DateTime.now().day.toString()+"/"+DateTime.now().month.toString() +"/"+DateTime.now().year.toString(),textAlign: TextAlign.left,style: TextStyle(fontSize: 20)),
             SizedBox(height: 10),
-            Text(horario.hora,style: TextStyle(fontSize: 24),textAlign: TextAlign.left),
+            Text("Hora: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text("Nome do Medicamento: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Text(horario.hora,style: TextStyle(fontSize: 20),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text(nomeM,style: TextStyle(fontSize: 24),textAlign: TextAlign.left),
+            Text("Nome do Medicamento: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text("Tipo de Medicamento: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Text(nomeM,style: TextStyle(fontSize: 20),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text(tipoM,style: TextStyle(fontSize: 24),textAlign: TextAlign.left),
+            Text("Tipo de Medicamento: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            o==true ? Text("Cuidador de: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left):Container(),
+            Text(tipoM,style: TextStyle(fontSize: 20),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            o==true ? Text(userM,style: TextStyle(fontSize: 24),textAlign: TextAlign.left):Container(),
-            confirmado==true ? Text("Vocé ja registou esta toma",style: TextStyle(fontSize: 30,color: Colors.green,fontWeight: FontWeight.bold)):Container(),
+            o==true ? Text("Cuidador de: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left):Container(),
+            SizedBox(height: 10),
+            o==true ? Text(userM,style: TextStyle(fontSize: 20),textAlign: TextAlign.left):Container(),
+            confirmado==true ? Text("Vocé ja registou esta toma!",style: TextStyle(fontSize: 20,color: Colors.green,fontWeight: FontWeight.bold)):Container(),
           ]
         )
       ),
@@ -136,6 +151,7 @@ class _State extends State<Confirmacao> {
             nomeM=medicamentoList[i].nome;
             tipoM=medicamentoList[i].tipo;
             userM=medicamentoList[i].nomeUtilizador;
+            imagemM=medicamentoList[i].imagem;
             if(userM==null){
               o=true;
             }

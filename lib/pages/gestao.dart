@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
@@ -61,7 +63,7 @@ void initState() {
               disabledTextColor: Colors.black,
               icon: Icon(Icons.add),
               onPressed: () {
-                navigateToDetail(Medicamento('', '','','','',1),Horario('',0), 'Adicionar Medicamento');
+                navigateToDetail(Medicamento(null,'', '','','','',1),Horario('',0), 'Adicionar Medicamento');
               },
             ),
             Expanded(
@@ -73,6 +75,17 @@ void initState() {
                           color: Colors.white,
                           elevation: 2.0,
                           child: ListTile(
+                            leading: Container(
+                              width: 60.0, height: 80.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                image: DecorationImage(
+                                    image: medicamentosList[position].imagem == null ?
+                                    AssetImage("assets/medicamento.png"):
+                                    FileImage(File(medicamentosList[position].imagem))
+                                ),
+                              ),
+                            ),
                             title: Text(this.medicamentosList[position].nome),
                             subtitle: Text(this.medicamentosList[position].tipo),
                             trailing: GestureDetector(

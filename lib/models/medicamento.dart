@@ -2,6 +2,7 @@
 class Medicamento {
 
   int _id;
+  String _imagem;
   String _nome;
   String _tipo;
   String _frequencia;
@@ -10,11 +11,12 @@ class Medicamento {
   int _estado;
 
 
-  Medicamento(this._nome, this._tipo,this._frequencia,this._stock,this._nomeUtilizador,this._estado);
+  Medicamento(this._imagem,this._nome, this._tipo,this._frequencia,this._stock,this._nomeUtilizador,this._estado);
 
-  Medicamento.withId(this._id, this._nome, this._tipo,this._frequencia,this._stock,this._nomeUtilizador,this._estado);
+  Medicamento.withId(this._id,this._imagem, this._nome, this._tipo,this._frequencia,this._stock,this._nomeUtilizador,this._estado);
 
   int get id => _id;
+  String get imagem => _imagem;
   String get nome => _nome;
   String get tipo => _tipo;
   String get frequencia => _frequencia;
@@ -28,7 +30,9 @@ class Medicamento {
   set estado(int newEstado) {
       this._estado = newEstado;
   }
-
+  set imagem(String newImagem) {
+      this._imagem = newImagem;
+  }
   set nome(String newNome) {
     if (newNome.length <= 255) {
       this._nome = newNome;
@@ -60,6 +64,7 @@ class Medicamento {
       map['id'] = _id;
     }
     map['nome'] = _nome;
+    map['imagem'] = _imagem;
     map['tipo'] = _tipo;
     map['frequencia'] = _frequencia;
     map['stock']=_stock;
@@ -73,6 +78,7 @@ class Medicamento {
   // Extract a Note object from a Map object
   Medicamento.fromMapObject(Map<String, dynamic> map) {
     this._id = map['id'];
+    this._imagem = map['imagem'];
     this._nome = map['nome'];
     this._tipo = map['tipo'];
     this._frequencia = map['frequencia'];

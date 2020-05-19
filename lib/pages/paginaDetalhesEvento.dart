@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
@@ -32,7 +33,7 @@ class _State extends State<Detalhes> {
   String Dia="";
   String nomeM="";
   String tipoM="";
-
+  String imagemM=null;
   _State(this.eventoID);
 
   @override
@@ -67,21 +68,34 @@ class _State extends State<Detalhes> {
         child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("Dia: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Container(
+              width: 150.0, height: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                image: DecorationImage(
+                    image: imagemM == null ?
+                    AssetImage('assets/medicamento.png'):
+                    FileImage(File(imagemM))
+
+                ),
+              ),
+            ),
             SizedBox(height: 10),
-            Text(Dia,style: TextStyle(fontSize: 24),textAlign: TextAlign.left),
+            Text("Dia: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text("Hora: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Text(Dia,style: TextStyle(fontSize: 20),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text(Hora,style: TextStyle(fontSize: 24),textAlign: TextAlign.left),
+            Text("Hora: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text("Nome do Medicamento: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Text(Hora,style: TextStyle(fontSize: 20),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text(nomeM,style: TextStyle(fontSize: 24),textAlign: TextAlign.left),
+            Text("Nome do Medicamento: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text("Tipo de Medicamento: ",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            Text(nomeM,style: TextStyle(fontSize: 20),textAlign: TextAlign.left),
             SizedBox(height: 10),
-            Text(tipoM,style: TextStyle(fontSize: 24),textAlign: TextAlign.left),
+            Text("Tipo de Medicamento: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.left),
+            SizedBox(height: 10),
+            Text(tipoM,style: TextStyle(fontSize: 20),textAlign: TextAlign.left),
           ]
         )
       ),
@@ -101,6 +115,7 @@ class _State extends State<Detalhes> {
           if(medicamentoList[i].id==id){
             nomeM=medicamentoList[i].nome;
             tipoM=medicamentoList[i].tipo;
+            imagemM=medicamentoList[i].imagem;
           }
       });
     });

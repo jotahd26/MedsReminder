@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
@@ -6,7 +7,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
-
+import 'package:image_picker/image_picker.dart';
 
 class PaginaMedicamento extends StatefulWidget {
   final String appBarTitle;
@@ -120,6 +121,64 @@ class _State extends State<PaginaMedicamento> {
     });
   }
   int count=0;
+  _openGallery(BuildContext context) async{
+    var picture =await ImagePicker.pickImage(source:ImageSource.gallery);
+    if(picture==null) return;
+    this.setState(() {
+      Navigator.pop(context);
+      medicamento.imagem = picture.path;
+    });
+  }
+  _openCamera(BuildContext context) async{
+    var picture =await ImagePicker.pickImage(source:ImageSource.camera);
+    if(picture==null) return;
+    this.setState(() {
+      Navigator.pop(context);
+      medicamento.imagem = picture.path;
+    });
+  }
+  _imagemPadrao(BuildContext context) async{
+    var picture = AssetImage('assets/medicamento.png');
+    if(picture==null) return;
+    this.setState(() {
+      Navigator.pop(context);
+      medicamento.imagem = null;
+    });
+  }
+  Future<void>_showChoiceDialog(BuildContext context){
+    return showDialog(context:context,builder:(BuildContext context){
+      return AlertDialog(
+        title: Text("Escolha uma opção!"),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+
+              GestureDetector(
+                child: Text("Imagem padrão",style: TextStyle(fontSize: 18),),
+                onTap: (){
+                  _imagemPadrao(context);
+                },
+              ),
+              Padding(padding: EdgeInsets.all(8.0)),
+              GestureDetector(
+                child: Text("Galeria",style: TextStyle(fontSize: 18)),
+                onTap: (){
+                  _openGallery(context);
+                },
+              ),
+              Padding(padding: EdgeInsets.all(8.0)),
+              GestureDetector(
+                child: Text("Câmera",style: TextStyle(fontSize: 18),),
+                onTap: (){
+                  _openCamera(context);
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -184,6 +243,23 @@ class _State extends State<PaginaMedicamento> {
                 ],
               ),
             ):Container(),
+            GestureDetector(
+              child:Container(
+        width: 150.0, height: 150,
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          image: DecorationImage(
+              image: medicamento.imagem != null ?
+              FileImage(File(medicamento.imagem)) :
+              AssetImage('assets/medicamento.png')
+          ),
+        ),
+      ),
+      onTap:() {
+        _showChoiceDialog(context);
+      } ,
+    ),
+
             Card(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
