@@ -113,6 +113,7 @@ void initState() {
   void _delete(BuildContext context, Medicamento medicamento) async {
     int result = await databaseHelper.deleteMedicamento(medicamento.id);
     int result2= await databaseHelper.deleteHorarioMedicamento(medicamento.id);
+    int result3= await databaseHelper.deleteEventoMedicamento(medicamento.id);
       if (result != 0) {
         _showSnackBar(context, 'Medicamento '+medicamento.nome+' apagado com sucesso');
         updateListView();

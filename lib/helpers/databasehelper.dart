@@ -144,6 +144,11 @@ class DatabaseHelper {
     int result = await db.rawDelete('DELETE FROM $eventosTable WHERE $codidHEventos="$idhorario" and $colDataEvento="$dia"');
     return result;
   }
+  Future<int> deleteEventoMedicamento(int idMedicamento) async {
+    var db = await this.database;
+    int result = await db.rawDelete('DELETE FROM $eventosTable WHERE $codidMEventos=$idMedicamento');
+    return result;
+  }
   Future<int> getCountHorario() async {
     Database db = await this.database;
     List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $horarioTable');
