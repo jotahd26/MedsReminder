@@ -632,6 +632,7 @@ class _State extends State<PaginaMedicamento> {
           for(int i=0;i<timeofdaydelete.length;i++){
             if(horarioList[x].hora==timeofdaydelete[i]){
               int result2= await helper.deleteHorario(horarioList[x].id);
+              int result3= await helper.deleteEventoHorario(horarioList[x].id);
               //print("valor a apagar"+horarioList[x].hora);
             }
           }

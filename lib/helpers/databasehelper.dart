@@ -134,6 +134,7 @@ class DatabaseHelper {
     int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdMedicamento=$idmedicamento' );
     return result;
   }
+
   Future<int> deleteHorario(int id) async {
     var db = await this.database;
     int result = await db.rawDelete('DELETE FROM $horarioTable WHERE $colIdHorario = $id');
@@ -142,6 +143,11 @@ class DatabaseHelper {
   Future<int> deleteEvento(int idhorario,String dia) async {
     var db = await this.database;
     int result = await db.rawDelete('DELETE FROM $eventosTable WHERE $codidHEventos="$idhorario" and $colDataEvento="$dia"');
+    return result;
+  }
+  Future<int> deleteEventoHorario(int id) async {
+    var db = await this.database;
+    int result = await db.rawDelete('DELETE FROM $eventosTable WHERE $codidHEventos = $id');
     return result;
   }
   Future<int> deleteEventoMedicamento(int idMedicamento) async {
