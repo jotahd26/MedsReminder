@@ -167,10 +167,23 @@ class DatabaseHelper {
     int result = Sqflite.firstIntValue(x);
     return result;
   }
+  Future<int> verificacaoestado(int id) async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.rawQuery('select count (*) from $medicamentoTable where $colId="$id" and $colEstado=0');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
   Future<int> getFutureID() async {
 
     Database db = await this.database;
     List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$medicamentoTable"');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
+  Future<int> getFutureIDHorario() async {
+
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.rawQuery('select seq from sqlite_sequence where name="$horarioTable"');
     int result = Sqflite.firstIntValue(x);
     return result;
   }

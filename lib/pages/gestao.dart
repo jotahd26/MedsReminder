@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
@@ -109,8 +110,20 @@ void initState() {
       )
     );
   }
-
+var flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+Future<void> cancelNotification(int id) async {
+  await flutterLocalNotificationsPlugin.cancel(id);
+}
   void _delete(BuildContext context, Medicamento medicamento) async {
+  //remover notificacões
+      setState(() {
+        for(int i=0;i<horarioList.length;i++){
+          if(horarioList[i].idMedicamento==medicamento.id) {
+            cancelNotification(horarioList[i].id);
+          }
+        }
+        //this.count2 = noteList.length;
+      });
     int result = await databaseHelper.deleteMedicamento(medicamento.id);
     int result2= await databaseHelper.deleteHorarioMedicamento(medicamento.id);
     int result3= await databaseHelper.deleteEventoMedicamento(medicamento.id);

@@ -110,10 +110,16 @@ class _State extends State<Horarios> {
                               ),
                               subtitle: Text("${UserMedicamentos[position]}"),
                               //isThreeLine: true,
-                              trailing: Text(horarioList[position].hora,
-                                      style: Theme.of(context).textTheme.subtitle.copyWith(
-                                        fontSize: 16,
-                                      ),
+                              trailing: new Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  new Icon(Icons.alarm,color: Colors.blue),
+                                  new Text(" "+horarioList[position].hora,
+                                    style: Theme.of(context).textTheme.subtitle.copyWith(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
                               onTap: () {
                                 navigateToDetail(this.horarioList[position],Eventos(0,0,DateTime(2000,0,0)));

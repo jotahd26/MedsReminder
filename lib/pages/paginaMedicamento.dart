@@ -8,6 +8,10 @@ import 'package:myflutterproject/helpers/databasehelper.dart';
 import 'package:myflutterproject/models/horario.dart';
 import 'package:myflutterproject/models/medicamento.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
 
 class PaginaMedicamento extends StatefulWidget {
   final String appBarTitle;
@@ -29,6 +33,7 @@ class _State extends State<PaginaMedicamento> {
   Medicamento medicamento;
   Horario horario;
   List<Horario> horarioList;
+  List<Horario> horarioListUpdate;
 
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController tipoController = TextEditingController();
@@ -52,10 +57,15 @@ class _State extends State<PaginaMedicamento> {
   final _nomeFocus = FocusNode();
   bool editar=false;
   int contadorlistahora = 0;
+  int contadorlistahora2 = 0;
   int o;
   int o2;
   bool ativado;
   String nomeestado;
+
+  NotificationAppLaunchDetails notificationAppLaunchDetails;
+  var flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -66,7 +76,17 @@ class _State extends State<PaginaMedicamento> {
     medicamento = Medicamento.fromMapObject(widget.medicamento.toMap());
     EditarMedicamento();
     loadCSV();
+    initializeNotifications();
   }
+    FlutterLocalNotificationsPlugin localNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+    initializeNotifications() async {
+      var initializeAndroid = AndroidInitializationSettings('ic_launcher');
+      var initializeIOS = IOSInitializationSettings();
+      var initSettings = InitializationSettings(initializeAndroid, initializeIOS);
+      await localNotificationsPlugin.initialize(initSettings);
+    }
+
   List <String> tipoList= ["Ampolas", "Aplicações", "Capsulas", "Colher de cha", "Colher de sopa","Gota","Grama","Inalações","Injeção","Miligrama","Mililitro","Pedaço","Penso","Pilula","Spray","Supositório","UI","Unidade"];
   List <String> frequenciaList = ["Diariamente, x vezes ao dia", "Diariamente, a cada x horas","A cada X dias","Dias especificos da semana"];
   void getIdUltimoInserido() async{
@@ -624,15 +644,22 @@ class _State extends State<PaginaMedicamento> {
           else{
             horario.idMedicamento=1;
           }
+          var hora=horario.hora.split(':');
+          print("Hora="+int.parse(hora[0]).toString() +" Minuto="+hora[1]);
+          int horarioid= await helper.getFutureIDHorario();
+
           result = await helper.insertHorario(horario);
+          await _showDailyAtTime(horarioid,int.parse(hora[0]),int.parse(hora[1]),medicamento.nome);
         }
       }
       if(editar==true){
+
         for(int x=0;x<contadorlistahora;x++){
           for(int i=0;i<timeofdaydelete.length;i++){
             if(horarioList[x].hora==timeofdaydelete[i]){
               int result2= await helper.deleteHorario(horarioList[x].id);
               int result3= await helper.deleteEventoHorario(horarioList[x].id);
+              cancelNotification(horarioList[x].id);
               //print("valor a apagar"+horarioList[x].hora);
             }
           }
@@ -645,6 +672,10 @@ class _State extends State<PaginaMedicamento> {
               horario.hora=timeofdayadicionar[i];
               //print("valor a acrescentar "+timeofdayadicionar[i]);
               int result= await helper.insertHorario(horario);
+              int horarioid= await helper.getFutureIDHorario();
+              var hora=horario.hora.split(':');
+              print("Hora="+int.parse(hora[0]).toString() +" Minuto="+hora[1]);
+              await _showDailyAtTime(horarioid,int.parse(hora[0]),int.parse(hora[1]),medicamento.nome);
             }
           }
         }
@@ -677,4 +708,26 @@ class _State extends State<PaginaMedicamento> {
           });
       });
     }
+  Future<void> _showDailyAtTime(int id,int Hour,int Minute, String nomeMedicamento) async {
+    var time = Time(Hour, Minute, 0);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'repeatDailyAtTime channel id',
+        'repeatDailyAtTime channel name',
+        'repeatDailyAtTime description');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.showDailyAtTime(
+        id,
+        '$nomeMedicamento',
+        'Toma de Medicamento - ${_toTwoDigitString(time.hour)}:${_toTwoDigitString(time.minute)}',
+        time,
+        platformChannelSpecifics);
+  }
+  String _toTwoDigitString(int value) {
+    return value.toString().padLeft(2, '0');
+  }
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
 }
